@@ -20,9 +20,13 @@ class App extends Component {
       add
     }
   ]
-    this.setState({transactions,
+    this.setState({
+    transactions,
     description: '',
     amount: '',
+    resultIncome: 0,
+    resultExp: 0,
+    totalBalance: 0,
     })
   }
 
@@ -32,6 +36,25 @@ class App extends Component {
 
   addDescription = (e) => {
     this.setState({description: e.target.value})
+  }
+
+  getIncome = () => this.state.transactions
+    .reduce((acc, item) => item.add ? item.amount + acc : acc, 0)
+
+
+  getExp = () => this.state.transactions
+  .reduce((acc, item) => !item.add ? item.amount + acc : acc, 0)
+
+  getTotalBalance() {
+    const resultIncome = this.getIncome()
+    const resultExp = this.getExp()
+    const totalBalance = resultIncome - resultExp
+
+    this.setState({
+      resultIncome,
+      resultExp,
+      totalBalance,
+    })
   }
 
   render() {
