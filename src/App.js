@@ -6,17 +6,24 @@ import Operation from './components/operation/Operation';
 
 class App extends Component {
   state = {
-    transactions: [],
+    transactions: JSON.parse(localStorage.getItem('calcMoney')) || [],
     description: '',
     amount: '',
+    resultIncome: 0,
+    resultExp: 0,
+    totalBalance: 0,
+  }
+
+  componentWillMount() {
+    this.getTotalBalance()
   }
 
   addTransaction = (add) => {
     const transactions = [...this.state.transactions,
     {
-      id: `cmr${(+new Date).toString(16)}`,
+      id: `cmr${(+new Date()).toString(16)}`,
       description: this.state.description,
-      amount: this.state.amount,
+      amount: parseFloat(this.state.amount),
       add
     }
   ]
@@ -24,9 +31,9 @@ class App extends Component {
     transactions,
     description: '',
     amount: '',
-    resultIncome: 0,
-    resultExp: 0,
-    totalBalance: 0,
+    }, () => {
+      this.getTotalBalance()
+      this.addStorage()
     })
   }
 
@@ -57,6 +64,10 @@ class App extends Component {
     })
   }
 
+  addStorage() {
+    localStorage.setItem('caclMoney', JSON.stringify(this.state.transactions))
+  }
+
   render() {
     return (
       <div>
@@ -67,7 +78,11 @@ class App extends Component {
 
         <main>
           <div className="container">
-            <Total />
+            <Total 
+              resultExp={this.state.resultExp}
+              resultIncome={this.state.resultIncome}
+              totalBalance={this.state.totalBalance}
+            />
             <History transactions={this.state.transactions} />
             <Operation 
             addTransaction={this.addTransaction}
