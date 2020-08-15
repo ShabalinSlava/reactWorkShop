@@ -6,7 +6,7 @@ import Operation from './components/operation/Operation';
 
 class App extends Component {
   state = {
-    transactions: JSON.parse(localStorage.getItem('calcMoney')) || [],
+    transactions: JSON.parse(localStorage.getItem('calcMoney1')) || [],
     description: '',
     amount: '',
     resultIncome: 0,
@@ -16,6 +16,10 @@ class App extends Component {
 
   componentWillMount() {
     this.getTotalBalance()
+  }
+
+  componentDidUpdate() {
+    this.addStorage()
   }
 
   addTransaction = (add) => {
@@ -31,10 +35,7 @@ class App extends Component {
     transactions,
     description: '',
     amount: '',
-    }, () => {
-      this.getTotalBalance()
-      this.addStorage()
-    })
+    }, this.getTotalBalance)
   }
 
   addAmount = (e) => {
@@ -65,7 +66,12 @@ class App extends Component {
   }
 
   addStorage() {
-    localStorage.setItem('caclMoney', JSON.stringify(this.state.transactions))
+    localStorage.setItem('caclMoney1', JSON.stringify(this.state.transactions))
+  }
+
+  delTransaction = (key) => {
+    const transactions = this.state.transactions.filter(item => item.id !== key)
+    this.setState({transactions}, this.addTransaction)
   }
 
   render() {
@@ -83,13 +89,16 @@ class App extends Component {
               resultIncome={this.state.resultIncome}
               totalBalance={this.state.totalBalance}
             />
-            <History transactions={this.state.transactions} />
+            <History 
+              transactions={this.state.transactions}
+              delTransaction={this.delTransaction}
+            />
             <Operation 
-            addTransaction={this.addTransaction}
-            addAmount={this.addAmount}
-            addDescription={this.addDescription}
-            description={this.state.description}
-            amount={this.state.amount}
+              addTransaction={this.addTransaction}
+              addAmount={this.addAmount}
+              addDescription={this.addDescription}
+              description={this.state.description}
+              amount={this.state.amount}
             />
           </div>
         </main>
